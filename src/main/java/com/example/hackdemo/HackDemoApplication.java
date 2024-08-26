@@ -10,15 +10,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.io.IOException;
 
 @SpringBootApplication
-public class HackDemoApplication{
+public class HackDemoApplication implements CommandLineRunner{
 	@Autowired
 	private ExcelService excelService;
 	public static void main(String[] args) {
 		SpringApplication.run(HackDemoApplication.class, args);
 	}
 
-/*
- implements CommandLineRunner
 	@Override
 	public void run(String... args) {
 		try {
@@ -41,5 +39,5 @@ public class HackDemoApplication{
 			System.err.println("Error reading one of the Excel files: " + e.getMessage());
 		}
 	}
-*/
+
 }
