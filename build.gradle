@@ -55,6 +55,9 @@ dependencies {
 
 
 }
+jar {
+	enabled = false
+}
 bootJar {
 	archiveFileName = 'heron-server.jar' // JAR 파일 이름 설정
 }
