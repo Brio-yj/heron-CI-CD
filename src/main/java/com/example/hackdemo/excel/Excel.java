@@ -13,5 +13,15 @@ public class Excel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String columnName;
+    private String dataName; // 데이터를 식별할 이름
+    private boolean isLoaded; // 데이터가 로드되었는지 여부
+
+    // Constructors, getters, and setters
+    public Excel() {
+    }
+
+    public Excel(String dataName, boolean isLoaded) {
+        this.dataName = dataName;
+        this.isLoaded = isLoaded;
+    }
 }

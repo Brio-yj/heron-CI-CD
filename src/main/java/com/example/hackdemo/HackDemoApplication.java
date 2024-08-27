@@ -20,18 +20,29 @@ public class HackDemoApplication implements CommandLineRunner{
 	@Override
 	public void run(String... args) {
 		try {
+			if (!excelService.isDataLoaded("areas")) {
+				String areaFilePath = "document/area.xlsx";
+				excelService.readAndSaveAreas(areaFilePath);
+				excelService.markDataAsLoaded("areas");
+			}
 
-			String areaFilePath = "document/area.xlsx";
-			excelService.readAndSaveAreas(areaFilePath);
+			if (!excelService.isDataLoaded("restaurants")) {
+				String restaurantFilePath = "document/restaurant.xlsx";
+				excelService.readAndSaveRestaurants(restaurantFilePath);
+				excelService.markDataAsLoaded("restaurants");
+			}
 
-			String restaurantFilePath = "document/restaurant.xlsx";
-			excelService.readAndSaveRestaurants(restaurantFilePath);
+			if (!excelService.isDataLoaded("tourSpots")) {
+				String tourSpotFilePath = "document/tourSpot.xlsx";
+				excelService.readAndSaveTourSpots(tourSpotFilePath);
+				excelService.markDataAsLoaded("tourSpots");
+			}
 
-			String tourSpotFilePath = "document/tourSpot.xlsx";
-			excelService.readAndSaveTourSpots(tourSpotFilePath);
-
-			String courseFilePath = "document/course.xlsx";
-			excelService.readAndSaveCourses(courseFilePath);
+			if (!excelService.isDataLoaded("courses")) {
+				String courseFilePath = "document/course.xlsx";
+				excelService.readAndSaveCourses(courseFilePath);
+				excelService.markDataAsLoaded("courses");
+			}
 
 		} catch (InvalidFormatException e) {
 			System.err.println("Invalid format in one of the Excel files: " + e.getMessage());

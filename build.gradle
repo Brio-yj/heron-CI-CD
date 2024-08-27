@@ -58,8 +58,9 @@ dependencies {
 jar {
 	enabled = false
 }
-bootJar {
-	archiveFileName = 'heron-server.jar' // JAR 파일 이름 설정
+jar {
+	archiveBaseName.set('heron')
+	archiveVersion.set('1.0.0') // 프로젝트의 버전
 }
 tasks.named('test') {
 	useJUnitPlatform()

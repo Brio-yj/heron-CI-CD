@@ -33,6 +33,10 @@ public class ExcelService {
 
     @Autowired
     private CourseRepository courseRepository;
+
+    @Autowired
+    private ExcelRepository excelRepository;
+
     public void readAndSaveAreas(String filePath) throws IOException, InvalidFormatException {
         FileInputStream file = new FileInputStream(new File(filePath));
         Workbook workbook = WorkbookFactory.create(file);
@@ -190,6 +194,19 @@ public class ExcelService {
             return ""; // 기본 값 반환 또는 다른 처리
         }
         return cell.getStringCellValue().trim();
+    }
+    public boolean isDataLoaded(String dataName) {
+        return excelRepository.existsByDataNameAndIsLoadedTrue(dataName);
+    }
+
+    public void markDataAsLoaded(String dataName) {
+        Excel excel = excelRepository.findByDataName(dataName);
+        if (excel == null) {
+            excel = new Excel(dataName, true);
+        } else {
+            excel.setLoaded(true);
+        }
+        excelRepository.save(excel);
     }
 }
 
