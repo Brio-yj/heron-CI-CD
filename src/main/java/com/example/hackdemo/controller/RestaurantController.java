@@ -7,7 +7,7 @@ import com.example.hackdemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.core.Authentication;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,18 +28,6 @@ public class RestaurantController {
     public Restaurant getRestaurantById(@PathVariable Long id) {
         return restaurantService.getRestaurantById(id);
     }
-    /*
-    @PostMapping("/{id}/favorites")
-    public ResponseEntity<?> toggleFavoriteRestaurant(@PathVariable Long id, Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User must be logged in to favorite a restaurant");
-        }
-
-        Long userId = Long.parseLong(authentication.getName());
-        userService.toggleFavorite(userId, id,null,null );
-
-        return ResponseEntity.ok().build();
-    }
 
     @GetMapping("/favorites")
     public ResponseEntity<List<Restaurant>> getFavoriteRestaurants(Authentication authentication) {
@@ -51,6 +39,19 @@ public class RestaurantController {
         List<Restaurant> favorites = userService.getFavoriteRestaurants(userId);
 
         return ResponseEntity.ok(favorites);
+    }
+
+    /*
+    @PostMapping("/{id}/favorites")
+    public ResponseEntity<?> toggleFavoriteRestaurant(@PathVariable Long id, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User must be logged in to favorite a restaurant");
+        }
+
+        Long userId = Long.parseLong(authentication.getName());
+        userService.toggleFavorite(userId, id,null,null );
+
+        return ResponseEntity.ok().build();
     }
 
    @PostMapping

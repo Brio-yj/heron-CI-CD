@@ -1,11 +1,14 @@
 package com.example.hackdemo.service;
 
+import com.example.hackdemo.jwt.JwtTokenProvider;
+import com.example.hackdemo.jwt.UserToken;
 import com.example.hackdemo.model.*;
 import com.example.hackdemo.repository.*;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,68 +30,54 @@ public class UserService {
     private TourSpotRepository tourSpotRepository;
     @Autowired
     private CourseRepository courseRepository;
-
+    @Autowired
+    private UserTokenRepository userTokenRepository;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+    @Value("${jwt.expiration}")
+    private int jwtExpirationInMs;
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
     @Transactional
-    public User findOrCreateUser(String email, String name) {
-        logger.info("findOrCreateUser called with email: {} and name: {}", email, name);
-
+    public User findOrCreateUser(String email, String name, String provider, String providerId) {
         return userRepository.findByEmail(email)
+                .map(existingUser -> {
+                    existingUser.setName(name);
+                    existingUser.setProvider(provider);
+                    existingUser.setProviderId(providerId);
+                    return userRepository.save(existingUser);
+                })
                 .orElseGet(() -> {
-                    logger.debug("User not found, creating new user");
-
                     User newUser = new User();
                     newUser.setEmail(email);
                     newUser.setName(name);
-
-                    User savedUser = userRepository.save(newUser);
-                    logger.info("New user created with id: {}", savedUser.getId());
-
-                    return savedUser;
+                    newUser.setProvider(provider);
+                    newUser.setProviderId(providerId);
+                    return userRepository.save(newUser);
                 });
     }
 
-    public void toggleFavorite(Long userId, Long restaurantId, Long tourSpotId, Long courseId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
+    @Transactional
+    public String createAndSaveUserToken(User user) {
+        String token = jwtTokenProvider.createToken(user.getId(), user.getEmail());
 
-        Optional<Favorite> existingFavorite = Optional.empty();
+        UserToken userToken = userTokenRepository.findByUser(user)
+                .orElse(new UserToken());
 
-        if (restaurantId != null) {
-            existingFavorite = favoriteRepository.findByUserIdAndRestaurantId(userId, restaurantId);
-        } else if (tourSpotId != null) {
-            existingFavorite = favoriteRepository.findByUserIdAndTourSpotId(userId, tourSpotId);
-        } else if (courseId != null) {
-            existingFavorite = favoriteRepository.findByUserIdAndCourseId(userId, courseId);
-        } else {
-            throw new IllegalArgumentException("One of restaurantId, tourSpotId, or courseId must be provided");
-        }
+        userToken.setUser(user);
+        userToken.setToken(token);
+        userToken.setExpiryDate(LocalDateTime.now().plusSeconds(jwtExpirationInMs / 1000));
 
-        if (existingFavorite.isPresent()) {
-            favoriteRepository.delete(existingFavorite.get());
-        } else {
-            Favorite newFavorite = new Favorite();
-            newFavorite.setUser(user);
-            newFavorite.setCreatedAt(LocalDateTime.now());
+        userTokenRepository.save(userToken);
 
-            if (restaurantId != null) {
-                Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                        .orElseThrow(() -> new NoSuchElementException("Restaurant not found"));
-                newFavorite.setRestaurant(restaurant);
-            } else if (tourSpotId != null) {
-                TourSpot tourSpot = tourSpotRepository.findById(tourSpotId)
-                        .orElseThrow(() -> new NoSuchElementException("TourSpot not found"));
-                newFavorite.setTourSpot(tourSpot);
-            } else if (courseId != null) {
-                Course course = courseRepository.findById(courseId)
-                        .orElseThrow(() -> new NoSuchElementException("Course not found"));
-                newFavorite.setCourse(course);
-            }
-
-            favoriteRepository.save(newFavorite);
-        }
+        return token;
     }
 
     public List<Restaurant> getFavoriteRestaurants(Long userId) {
