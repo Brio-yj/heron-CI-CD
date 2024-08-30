@@ -25,7 +25,7 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-/src/main/resources/application-auth.properties
+/src/main/resources/application.properties
 
 ### NetBeans ###
 /nbproject/private/
@@ -39,5 +39,3 @@ out/
 
 src/main/resources/application-auth.properties
 
-# Ignore the application-auth.properties file
-src/main/resources/application-auth.properties
