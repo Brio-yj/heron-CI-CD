@@ -52,9 +52,9 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       # (4-1) Create application-auth.properties from Secrets
-      - name: Create application-auth.properties
+      - name: Create application.properties
         run: |
-          echo "${{ secrets.APPLICATION_AUTH_PROPERTIES }}" > src/main/resources/application-auth.properties
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > src/main/resources/application.properties
 
       # (5) 빌드 결과물을 S3 버킷에 업로드
       - name: Upload to AWS S3
