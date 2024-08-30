@@ -14,7 +14,7 @@ public class AuthController {
 
     @GetMapping("/google")
     public ResponseEntity<String> googleLogin() {
-        return ResponseEntity.ok("Google 로그인을 시작하려면 이 URL로 리다이렉트하세요: /oauth2/authorization/google");
+        return ResponseEntity.ok("구글 로그인을 시작하려면 이 URL로 리다이렉트하세요: /oauth2/authorization/google");
     }
 
     @GetMapping("/login/success")
