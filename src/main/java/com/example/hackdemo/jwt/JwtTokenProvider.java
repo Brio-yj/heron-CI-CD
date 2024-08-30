@@ -3,15 +3,24 @@ package com.example.hackdemo.jwt;
 import com.example.hackdemo.service.UserService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+@Getter
+@Setter
 @Component
+@ConfigurationProperties(prefix = "jwt")
 public class JwtTokenProvider {
+
+    private String secret;
+    private int expirationInMs;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
