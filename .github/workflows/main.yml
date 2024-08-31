@@ -54,9 +54,8 @@ jobs:
       # (4-1) Create application-auth.properties from Secrets
       - name: Create application-auth.properties
         run: |
-          mkdir -p src/main/resources
-          touch src/main/resources/application.properties
-          echo "${{ secrets.APPLICATION_PROPERTIES }}" > src/main/resources/application.properties
+          touch /home/ubuntu/app/application.properties
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > /home/ubuntu/app/application.properties
 
       # (5) 빌드 결과물을 S3 버킷에 업로드
       - name: Upload to AWS S3
