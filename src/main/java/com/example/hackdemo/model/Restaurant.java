@@ -12,6 +12,7 @@ public class Restaurant {
     private Long id;
 
     private String googleId;
+
     private String name;
     private String address;
     private String mainMenu;
