@@ -33,9 +33,18 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+
+      # (4-1) Create application-auth.properties from Secrets
+      - name: Create application-auth.properties
+        run: |
+          touch src/main/resources/application.properties
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > src/main/resources/application.properties
+
       # (2.1) Grant execute permission for gradlew
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew # gradlew 스크립트에 실행 권한 부여
+
+
 
       # (3) Gradle build (Test 제외)
       - name: Build with Gradle
@@ -50,12 +59,6 @@ jobs:
           aws-access-key-id: ${{ secrets.HERON_CICD_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.HERON_CICD_PRIVATE_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-
-      # (4-1) Create application-auth.properties from Secrets
-      - name: Create application-auth.properties
-        run: |
-          touch application.properties
-          echo "${{ secrets.APPLICATION_PROPERTIES }}" > application.properties
 
       # (5) 빌드 결과물을 S3 버킷에 업로드
       - name: Upload to AWS S3
