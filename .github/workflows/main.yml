@@ -9,7 +9,7 @@ env:
   AWS_REGION: ap-northeast-2
   S3_BUCKET_NAME: heron-back-ci-cd
   CODE_DEPLOY_APPLICATION_NAME: heron-codedeploy-app
-  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME:  heron-codedeploy-deployment-group
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: heron-codedeploy-deployment-group
 
 permissions:
   contents: read
@@ -32,23 +32,10 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # (4-1) Create application.properties from Secrets
+      # (3) application.properties 생성
       - name: Create application.properties
         run: |
-          mkdir ./src/main/resources
-          cd ./src/main/resources
-          touch ./application.properties
-          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./application.properties
-
-      # (2.1) Grant execute permission for gradlew
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew # gradlew 스크립트에 실행 권한 부여
-
-      # (3) Gradle build (Test 제외)
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
-        with:
-          arguments: clean build -x test
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > src/main/resources/application.properties
 
       # (4) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
       - name: Configure AWS credentials
@@ -58,7 +45,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.HERON_CICD_PRIVATE_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # (5) 빌드 결과물을 S3 버킷에 업로드
+      # (5) Gradle 빌드 (만약 Gradle을 사용한다면)
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+      # (6) 빌드 결과물을 S3 버킷에 업로드
       - name: Upload to AWS S3
         run: |
           aws deploy push \
@@ -67,7 +58,7 @@ jobs:
             --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
             --source .
 
-      # (6) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
+      # (7) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
       - name: Deploy to AWS EC2 from S3
         run: |
           aws deploy create-deployment \
