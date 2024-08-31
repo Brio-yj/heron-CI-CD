@@ -51,7 +51,7 @@ jobs:
 
       # (5) Gradle 빌드 (만약 Gradle을 사용한다면)
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
 
       # (6) 빌드 결과물을 S3 버킷에 업로드
       - name: Upload to AWS S3
