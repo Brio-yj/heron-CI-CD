@@ -35,14 +35,10 @@ jobs:
       # (4-1) Create application.properties from Secrets
       - name: Create application.properties
         run: |
-          touch ./app/src/main/resources/application.properties
-          echo "${{ secrets.APPLICATION }}" > ./app/src/main/resources/application.properties
-          cat ./app/src/main/resources/application.yml
-
-#          mkdir .app/src/main/resources
-#          cd .app/src/main/resources
-#          touch ./application.properties
-#          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./application.properties
+          mkdir ./src/main/resources
+          cd ./src/main/resources
+          touch ./application.properties
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./application.properties
 
       # (2.1) Grant execute permission for gradlew
       - name: Grant execute permission for gradlew
@@ -52,8 +48,7 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
         with:
-          arguments: build
-          build-root-directory: ./app
+          arguments: clean build -x test
 
       # (4) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
       - name: Configure AWS credentials
