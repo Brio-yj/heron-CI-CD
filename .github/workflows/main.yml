@@ -32,9 +32,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # (3) application.properties 생성
       - name: Create application.properties
         run: |
+          mkdir -p src/main/resources
           echo "${{ secrets.APPLICATION_PROPERTIES }}" > src/main/resources/application.properties
 
       # (4) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
