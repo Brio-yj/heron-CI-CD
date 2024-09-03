@@ -1,12 +1,15 @@
 package com.example.hackdemo.controller;
 
+import com.example.hackdemo.dto.FavoriteCourseDTO;
+import com.example.hackdemo.model.CustomUserDetails;
 import com.example.hackdemo.dto.CourseDTO;
-import com.example.hackdemo.dto.CourseItemDTO;
 import com.example.hackdemo.model.*;
 import com.example.hackdemo.repository.CourseRepository;
 import com.example.hackdemo.service.CourseCompletionService;
 import com.example.hackdemo.service.CourseService;
 import com.example.hackdemo.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/course")
 public class CourseController {
+    private static final Logger logger = LoggerFactory.getLogger(CourseController.class);
+
     @Autowired
     private CourseService courseService;
     @Autowired
@@ -39,15 +44,34 @@ public class CourseController {
     }
 
     @GetMapping("/favorites")
-    public ResponseEntity<List<Course>> getFavoriteCourse(Authentication authentication) {
+    public ResponseEntity<List<FavoriteCourseDTO>> getFavoriteCourse(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
-        Long userId = Long.parseLong(authentication.getName());
+        Object principal = authentication.getPrincipal();
+        logger.info("Principal class: {}", principal.getClass().getName());
+
+        if (!(principal instanceof CustomUserDetails)) {
+            logger.error("Principal is not an instance of CustomUserDetails. Actual: {}", principal.getClass());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) principal;
+        Long userId = userDetails.getId();
         List<Course> favorites = userService.getFavoriteCourses(userId);
 
-        return ResponseEntity.ok(favorites);
+        List<FavoriteCourseDTO> favoriteCourseDTOS = favorites.stream()
+                .map(course -> new FavoriteCourseDTO(
+                        course.getId(),
+                        course.getName(),
+                        course.getTheme(),
+                        course.getDuration(),
+                        course.getThumbnailUrl(),
+                        course.getLandmark()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(favoriteCourseDTOS);
     }
 
     @PostMapping("/{courseId}/complete")
