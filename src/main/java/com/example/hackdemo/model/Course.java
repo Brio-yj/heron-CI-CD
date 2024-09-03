@@ -16,6 +16,8 @@ public class Course {
     private String name;
     private String theme;
     private String duration;
+    private String thumbnailUrl;
+    private String landmark;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -28,5 +30,4 @@ public class Course {
             inverseJoinColumns = @JoinColumn(name = "area_id")
     )
     private List<Area> areas;
-
 }

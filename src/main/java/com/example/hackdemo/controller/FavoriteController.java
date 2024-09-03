@@ -1,5 +1,6 @@
 package com.example.hackdemo.controller;
 
+import com.example.hackdemo.jwt.JwtTokenProvider;
 import com.example.hackdemo.model.Favorite;
 import com.example.hackdemo.model.User;
 import com.example.hackdemo.service.FavoriteService;
@@ -17,6 +18,9 @@ public class FavoriteController {
 
     @Autowired
     private FavoriteService favoriteService;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/restaurant/{restaurantId}")
     public ResponseEntity<?> toggleFavoriteRestaurant(
@@ -44,4 +48,5 @@ public class FavoriteController {
         boolean isFavorite = favoriteService.toggleFavoriteCourse(user.getId(), courseId);
         return ResponseEntity.ok(new FavoriteResponse(isFavorite));
     }
+
 }

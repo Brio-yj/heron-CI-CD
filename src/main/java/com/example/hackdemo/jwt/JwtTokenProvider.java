@@ -19,7 +19,7 @@ import java.util.Date;
 @ConfigurationProperties(prefix = "jwt")
 public class JwtTokenProvider {
 
-    private String secret;
+
     private int expirationInMs;
 
     @Value("${jwt.secret}")

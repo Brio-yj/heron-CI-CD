@@ -144,11 +144,13 @@ public class ExcelService {
             List<CourseItem> courseItems = new ArrayList<>();
             Set<Area> courseAreas = new HashSet<>(); // Area 중복 방지
 
-            course.setName(getCellValue(row.getCell(0)));
-            course.setTheme(getCellValue(row.getCell(1)));
-            course.setDuration(getCellValue(row.getCell(2)));
+            course.setThumbnailUrl(getCellValue(row.getCell(0)));
+            course.setLandmark(getCellValue(row.getCell(1)));
+            course.setName(getCellValue(row.getCell(2)));
+            course.setTheme(getCellValue(row.getCell(3)));
+            course.setDuration(getCellValue(row.getCell(4)));
 
-            for (int i = 3; i < row.getLastCellNum(); i += 4) {
+            for (int i = 5; i < row.getLastCellNum(); i += 4) {
                 CourseItem courseItem = new CourseItem();
 
                 String placeName = getCellValue(row.getCell(i));
@@ -195,6 +197,7 @@ public class ExcelService {
         }
         return cell.getStringCellValue().trim();
     }
+
     public boolean isDataLoaded(String dataName) {
         return excelRepository.existsByDataNameAndIsLoadedTrue(dataName);
     }

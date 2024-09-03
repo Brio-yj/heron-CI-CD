@@ -2,12 +2,9 @@ package com.example.hackdemo.controller;
 
 import com.example.hackdemo.dto.CourseDTO;
 import com.example.hackdemo.dto.CourseItemDTO;
-import com.example.hackdemo.model.Course;
-import com.example.hackdemo.model.CourseItem;
-import com.example.hackdemo.model.Favorite;
-import com.example.hackdemo.model.TourSpot;
-import com.example.hackdemo.model.Area;
+import com.example.hackdemo.model.*;
 import com.example.hackdemo.repository.CourseRepository;
+import com.example.hackdemo.service.CourseCompletionService;
 import com.example.hackdemo.service.CourseService;
 import com.example.hackdemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +23,8 @@ public class CourseController {
     private CourseService courseService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CourseCompletionService completionService;
     @Autowired
     private CourseRepository courseRepository;
 
@@ -49,6 +48,22 @@ public class CourseController {
         List<Course> favorites = userService.getFavoriteCourses(userId);
 
         return ResponseEntity.ok(favorites);
+    }
+
+    @PostMapping("/{courseId}/complete")
+    public ResponseEntity<?> completeCourse(
+            @PathVariable Long courseId,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        completionService.completeCourse(user.getId(), courseId);
+        return ResponseEntity.ok("Course completed successfully");
+    }
+
+    @GetMapping("/completed/count")
+    public ResponseEntity<Long> getCompletedCourseCount(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        long completedCount = completionService.countCompletedCourses(user.getId());
+        return ResponseEntity.ok(completedCount);
     }
 
     /*

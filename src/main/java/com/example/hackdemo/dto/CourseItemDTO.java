@@ -5,12 +5,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class CourseItemDTO {
     private Long id;
+    private Long restaurantId;
+    private String restaurantGoogleId;
+    private String restaurantName;
+    private Long tourSpotId;
+    private String tourSpotGoogleId;
+    private String tourSpotName;
     private String description;
     private String mission;
     private String duration;
-    private boolean isLandmark;
 }

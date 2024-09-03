@@ -12,13 +12,6 @@ import java.util.List;
 public class CourseItemService {
     @Autowired
     private CourseItemRepository courseItemRepository;
-    public CourseItemDTO convertItemToDTO(CourseItem courseItem) {
-        return new CourseItemDTO(courseItem.getId(),
-                courseItem.getDescription(),
-                courseItem.getMission(),
-                courseItem.getDuration(),
-                courseItem.isLandmark());
-    }
 
     public List<CourseItem> getAllCourseItems() {
         return courseItemRepository.findAll();

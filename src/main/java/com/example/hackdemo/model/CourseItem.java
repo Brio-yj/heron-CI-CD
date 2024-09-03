@@ -27,6 +27,4 @@ public class CourseItem {
     private String description;
     private String mission;
     private String duration;
-
-    private boolean isLandmark;
 }
